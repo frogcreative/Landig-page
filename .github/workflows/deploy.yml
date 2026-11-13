@@ -1,5 +1,5 @@
 
-name: Deploy GitHub Pages
+name: Deploy FrogCreative Website
 
 on:
   push:
@@ -18,24 +18,30 @@ concurrency:
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
-    runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Configure Pages
+      - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload assets folder
+      - name: Prepare Website
+        run: |
+          mkdir -p public
+          cp -r assets/. public/
+          touch public/.nojekyll
+
+      - name: Upload Website
         uses: actions/upload-pages-artifact@v3
         with:
-          path: assets
+          path: public
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy Website
         id: deployment
         uses: actions/deploy-pages@v4
